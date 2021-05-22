@@ -1,0 +1,29 @@
+var y, x, j, g : int;
+z: real;
+w, r : int;
+s : str
+
+func fact(b:int; i:int; p:int){
+poka (i<b) delai {
+p := p*i;
+i:=i+1
+};
+vozv p*b
+}
+
+{
+x:=1;
+y:=5;
+j:=1;
+poka(x<y) delai {
+r:=1;
+r:=fact(x; j; r);
+print(r);
+print(",");
+x:=x+1
+
+
+};
+g:= 5/2;
+print(g)
+}
