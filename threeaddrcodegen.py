@@ -1,13 +1,9 @@
 from pars import result , Node
 from tabl_sim_gen import tabl_sim , table_for_t , functions
 
-
-
-
 threeaddrcode = {'main': []}
 t_count = 0
 if_count = 0
-
 
 def oblast_vid(result, name):
     if name.startswith('kogda') or (result.isnumeric()) or (is_number(result)):
@@ -35,15 +31,14 @@ def obhod_main(result):
         threeaddrcodeg(result.parts[1], 'main')
     threeaddrcode['main'].append('GOTO END')
 
-
 def if_while_chek(result):
     if (result.type == 'kogda'):
         flagok = "GOTO p_kogda"
     elif (result.type == 'poka'):
         flagok = "GOTO s_kogda"
     return flagok
-def threeaddrcodeg(result, name):
 
+def threeaddrcodeg(result, name):
     global t_count, if_count
     if (type(result) != Node and (result == 'break' or result == 'continue')):
         threeaddrcode[name].append(result)
@@ -59,13 +54,10 @@ def threeaddrcodeg(result, name):
             if (not oblast_vid(result.parts[0], name)):
                 return
             threeaddrcode[name].append(':= '+'t'+str(t_count-1)+ ' '+result.parts[0])
-
             table_for_t['t'+str(t_count-1)]=[]
             table_for_t['t'+str(t_count-1)].append(result.parts[0])
             print(table_for_t)
             t_count = 0
-
-
     elif ((result.type == 'kogda') or (result.type == 'poka')):
         flagok = if_while_chek(result)
         expression_obhod(result.parts[0], name)
@@ -83,11 +75,9 @@ def threeaddrcodeg(result, name):
             threeaddrcode[name].append('vozv ' + 't'+str(t_count-1))
     elif (result.type == 'print'):
         threeaddrcode[name].append('print ' + result.parts[0])
-
     else:
         for i in range(len(result.parts)):
             threeaddrcodeg(result.parts[i], name)
-            #print('-/-/-/-/-/-/-/-/-/-/')
 
 def is_number(string):
     try:
@@ -100,7 +90,6 @@ def is_number(string):
 
 def assign_threeaddrcode(result, name):
     global t_count
-
     if type(result) != Node:
         if (not oblast_vid(result, name)):
             return
@@ -112,7 +101,6 @@ def assign_threeaddrcode(result, name):
         if arg_left == None and arg_right == None:
             arg_left = 't' + str(t_count - 2)
             table_for_t['t' + str(t_count - 2)] = []
-
             table_for_t['t' + str(t_count - 1)] = []
             table_for_t['t'+str(t_count-2)].append('t' + str(t_count - 1))
             table_for_t['t'+str(t_count-2)].append('t' + str(t_count - 2))
@@ -134,18 +122,14 @@ def assign_threeaddrcode(result, name):
         for arg in result.parts[0].parts:
             string = string + arg + ' '
         temp = 't' + str(t_count)
-
         t_count = t_count + 1
         string = string + temp
         threeaddrcode[name].append(string)
-
     else:
         for i in range(len(result.parts)):
             assign_threeaddrcode(result.parts[i], name)
 
-
 def expression_obhod(result, name):
-
     global t_count
     if type(result) != Node:
         if (not oblast_vid(result, name)):

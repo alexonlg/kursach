@@ -229,12 +229,9 @@ def p_error(p):
     print ('Unexpected token:', p)
 
 #конец парсера
-
 f = open('code.txt', 'r')
 text_input = f.read()
 
-# lexer = Lexer().get_lexer()
-# tokens = lexer.lex(text_input)
 parser = yacc.yacc()
 result = parser.parse(text_input)
 print(result)

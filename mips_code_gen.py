@@ -2,7 +2,7 @@ from pars import result , Node
 from tabl_sim_gen import tabl_sim , table_for_t , functions
 from threeaddrcodegen import threeaddrcode , is_number
 table_for_float={}
-sho = tabl_sim
+t_s_copy = tabl_sim
 
 def table_for_t_gen(table_for_t):
     for i in range (len(table_for_t)):
@@ -20,7 +20,6 @@ def table_for_t_gen(table_for_t):
             tabl_sim['t' + str(i)] = []
             tabl_sim['t' + str(i)] = 'real'
         elif table_for_t['t'+str(i)][0] in tabl_sim and tabl_sim[table_for_t['t'+str(i)][0]][1]=='int':
-
             table_for_t['t' + str(i)] = []
             table_for_t['t' + str(i)] = 'int'
             tabl_sim['t' + str(i)] = []
@@ -37,7 +36,7 @@ def table_for_t_gen(table_for_t):
             table_for_t['t' + str(i)] = 'int'
             tabl_sim['t' + str(i)] = []
             tabl_sim['t' + str(i)] = 'int'
-    for lo in (sho):
+    for lo in (t_s_copy):
         if lo==('t0'):
             break
         table_for_t[lo]=[]
@@ -49,26 +48,21 @@ def chek_mul_div(cl, mult, mults, kak):
         mult = "div "
         mults = "div.s $f"
         kak = 1
-
-
     elif (cl == '*'):
         mult = "mult "
         mults = "mult.s $f"
         kak = 2
-
-
     return mult, mults, kak
 
 def chek_sum_sub(cl, addu, addus, kek, keks):
     if (cl == '+'):
         addu = "addu $"
-        addus = "addu.s $f"
+        addus = "add.s $f"
         kek = 2
         keks = 1
-
     elif (cl == '-'):
         addu = "subu $"
-        addus = "subu.s $f"
+        addus = "sub.s $f"
         kek = 1
         keks = 2
     return addu, addus, kek, keks
@@ -81,6 +75,7 @@ def sravn_op_chek(list_peremenn):
     elif list_peremenn[0] == '=':
         flagok1 = "bne $"
     return flagok1
+
 def fucking_code_generation(threeaddrcode, tabl_sim):
     global table_for_t
     if_count = 0    # счётчик ифов
@@ -91,8 +86,7 @@ def fucking_code_generation(threeaddrcode, tabl_sim):
     data = data + '.data\n\ttrue: .byte 1\n\tfalse: .byte 0\n'
     f = open('out.s', 'w')
     f.write('.text\n')
-
-    print(sho)
+    print(t_s_copy)
     lol = table_for_t_gen(table_for_t)
     table_for_t = lol
     for label in threeaddrcode:
@@ -100,7 +94,6 @@ def fucking_code_generation(threeaddrcode, tabl_sim):
         for command in threeaddrcode[label]:
             list_peremenn = command.split(' ')
             if ( list_peremenn[0] == ':=' ):
-
                 if list_peremenn[1].isnumeric() and (tabl_sim[list_peremenn[2]][1] == 'int' or table_for_t[list_peremenn[2]][0]=='i'):
                     if (list_peremenn[2] in table_for_t.keys() and table_for_t[list_peremenn[2]][0]!=list_peremenn[2]):
                         f.write('\tli $' + list_peremenn[2] + ', ' + list_peremenn[1] + '\n')
@@ -118,13 +111,11 @@ def fucking_code_generation(threeaddrcode, tabl_sim):
                     if (list_peremenn[1] in table_for_t.keys() and table_for_t[list_peremenn[1]][0]!=list_peremenn[1]):
                         if (list_peremenn[2] in table_for_t.keys() and table_for_t[list_peremenn[2]][0]!=list_peremenn[2]):
                             if table_for_t[list_peremenn[1]][0]=='r':
-
                                 f.write('\tmov.s $f' +  list_peremenn[2][1:] + ', $f' + list_peremenn[1][1:] + '\n')
                             else:
                                 f.write('\tmove $' + list_peremenn[2] + ', $f' + list_peremenn[1] + '\n')
                         elif list_peremenn[2] in tabl_sim.keys():
                             if table_for_t[list_peremenn[1]][0] == 'r':
-
                                 f.write('\tmov.s $' + tabl_sim[list_peremenn[2]][0] + ', $f' + list_peremenn[1][1:] + '\n')
                             else:
                                 f.write('\tmove $' + tabl_sim[list_peremenn[2]][0] + ', $' + list_peremenn[1] + '\n')
@@ -134,9 +125,6 @@ def fucking_code_generation(threeaddrcode, tabl_sim):
                                 f.write('\tmov.s $' + tabl_sim[list_peremenn[2]][0] + ', $' + tabl_sim[list_peremenn[1]][0] + '\n')
                             else:
                                 f.write('\tmove $' + tabl_sim[list_peremenn[2]][0] + ', $' + tabl_sim[list_peremenn[1]][0] + '\n')
-
-
-
                 else:
                     if (list_peremenn[2] in tabl_sim.keys()):
                         f.write('\tmove $' + list_peremenn[2] + ', $' + list_peremenn[1] + '\n')
@@ -144,7 +132,6 @@ def fucking_code_generation(threeaddrcode, tabl_sim):
                         f.write('\tmove $' + tabl_sim[list_peremenn[2]][0] + ', $' + list_peremenn[1] +'\n')
                     else:
                         f.write('\tmove $' + list_peremenn[2] + ', $' + list_peremenn[1] + '\n')
-
             elif (( list_peremenn[0] == '*' ) or ( list_peremenn[0] == '/' )):
                 mult = ""
                 mults = ""
@@ -157,80 +144,75 @@ def fucking_code_generation(threeaddrcode, tabl_sim):
                 kak = mass[2]
                 if not(is_number(list_peremenn[1]) or is_number(list_peremenn[2])):
                         if(list_peremenn[1].isnumeric() or tabl_sim[list_peremenn[1]][1]=='int' or table_for_t[list_peremenn[1]][0]=='i') and (list_peremenn[2].isnumeric() or tabl_sim[list_peremenn[2]][1]=='int'or table_for_t[list_peremenn[kak]][0]=='i'):
-
                             if list_peremenn[1].isnumeric():
-                                f.write('\tli $t0, '+ list_peremenn[2] + '\n')
-                                arg1 = '$t0'
+                                # f.write('\tli $t0, '+ list_peremenn[2] + '\n')
+                                arg_left = '$t0'
                                 if list_peremenn[2].isnumeric():
                                     f.write('\tli $t1, '+ list_peremenn[1]+ '\n')
-                                    arg2 = '$t1'
-                                    f.write('\t' + mult + arg1 + ', ' + arg2 + '\n')
+                                    arg_right = '$t1'
+                                    f.write('\t' + mult + arg_left + ', ' + arg_right + '\n')
                                 elif(list_peremenn[2] in tabl_sim and tabl_sim[list_peremenn[2]][1]=='int'):
-                                    arg2 = '$'+ tabl_sim[list_peremenn[2]][0]
-                                    f.write('\t' + mult + arg1 + ', ' + arg2 + '\n')
+                                    arg_right = '$'+ tabl_sim[list_peremenn[2]][0]
+                                    f.write('\t' + mult + arg_left + ', ' + arg_right + '\n')
                                 elif (table_for_t[list_peremenn[2]][0] == 'i'):
-                                    arg2 = '$' + list_peremenn[2]
-                                    f.write('\t' + mult + arg1 + ', ' + arg2 + '\n')
+                                    arg_right = '$' + list_peremenn[2]
+                                    f.write('\t' + mult + arg_left + ', ' + arg_right + '\n')
                             elif ((list_peremenn[1] in tabl_sim and tabl_sim[list_peremenn[1]][1] == 'int')or(table_for_t[list_peremenn[1]][0] == 'i' and list_peremenn[1] in table_for_t)):
                                 if (list_peremenn[1] in tabl_sim and tabl_sim[list_peremenn[1]][1] == 'int'):
-                                    arg1 = '$' + tabl_sim[list_peremenn[1]][0]
+                                    arg_left = '$' + tabl_sim[list_peremenn[1]][0]
                                 else:
-                                    arg1 = '$' + list_peremenn[1]
+                                    arg_left = '$' + list_peremenn[1]
                                 if list_peremenn[2].isnumeric():
                                     f.write('\tli $t1, '+ list_peremenn[2]+ '\n')
-                                    arg2 = '$t1'
-                                    f.write('\t' + mult + arg1 + ', ' + arg2 + '\n')
+                                    arg_right = '$t1'
+                                    f.write('\t' + mult + arg_left + ', ' + arg_right + '\n')
                                 elif (list_peremenn[2] in tabl_sim and tabl_sim[list_peremenn[2]][1] == 'int'):
-                                    arg2 = '$' + tabl_sim[list_peremenn[2]][0]
-                                    f.write('\t' + mult + arg1 + ', ' + arg2 + '\n')
+                                    arg_right = '$' + tabl_sim[list_peremenn[2]][0]
+                                    f.write('\t' + mult + arg_left + ', ' + arg_right + '\n')
                                 elif (table_for_t[list_peremenn[2]][0] == 'i' and list_peremenn[2] in table_for_t):
-                                    arg1 = '$' + list_peremenn[2]
-                                    f.write('\t' + mult + arg1 + ', ' + arg2 + '\n')
+                                    arg_right = '$' + list_peremenn[2]
+                                    f.write('\t' + mult + arg_left + ', ' + arg_right + '\n')
                                 f.write('\tmflo $' + list_peremenn[3] + '\n')
                         elif ((list_peremenn[1] in tabl_sim and tabl_sim[list_peremenn[1]][1] == 'real') or (table_for_t[list_peremenn[1]][0] == 'r' and list_peremenn[1] in table_for_t)):
                             if (list_peremenn[1] in tabl_sim and tabl_sim[list_peremenn[1]][1] == 'real'):
-                                arg1 = '$' + tabl_sim[list_peremenn[1]][0]
+                                arg_left = '$' + tabl_sim[list_peremenn[1]][0]
                             else:
-
-                                arg1 = '$f' + list_peremenn[1][1:]
+                                arg_left = '$f' + list_peremenn[1][1:]
                             if is_number(list_peremenn[2]):
                                 f.write('\tli.s $f1, ' + list_peremenn[2] + '\n')
-                                arg2 = '$f1'
-                                f.write('\t' + mults + list_peremenn[3][1:] + ', ' + arg1 + ', ' + arg2 + '\n')
+                                arg_right = '$f1'
+                                f.write('\t' + mults + list_peremenn[3][1:] + ', ' + arg_left + ', ' + arg_right + '\n')
                             elif (list_peremenn[2] in tabl_sim and tabl_sim[list_peremenn[2]][1] == 'real'):
-                                arg2 = '$' + tabl_sim[list_peremenn[2]][0]
-                                f.write('\tli.s $f' + list_peremenn[1][1:] + ', ' + arg1 + ', ' + arg2 + '\n')
+                                arg_right = '$' + tabl_sim[list_peremenn[2]][0]
+                                f.write('\tli.s $f' + list_peremenn[1][1:] + ', ' + arg_left + ', ' + arg_right + '\n')
 
-                                f.write('\t' + mults + list_peremenn[3][1:] + ', ' + arg1 + ', ' + arg2 + '\n')
+                                f.write('\t' + mults + list_peremenn[3][1:] + ', ' + arg_left + ', ' + arg_right + '\n')
                             elif (table_for_t[list_peremenn[2]][0] == 'r' and list_peremenn[2] in table_for_t):
 
-                                arg2 = '$f' + list_peremenn[2][1:]
-                                f.write('\t' + mults + list_peremenn[3][1:] + ', ' + arg1 + ', ' + arg2 + '\n')
-                                # f.write('\tmult ' + arg1 + ', ' + arg2 + '\n')
+                                arg_right = '$f' + list_peremenn[2][1:]
+                                f.write('\t' + mults + list_peremenn[3][1:] + ', ' + arg_left + ', ' + arg_right + '\n')
+                                # f.write('\tmult ' + arg_left + ', ' + arg_right + '\n')
                             # f.write('\tmult $' + list_peremenn[1] + ', $' + list_peremenn[2] + '\n')
                             else:
                                 print('error неверный тип')
                                 return
                 elif is_number(list_peremenn[1]):
-
                     f.write('\tli.s $f0, ' + list_peremenn[1] + '\n')
-                    arg1 = '$f0'
+                    arg_left = '$f0'
                     if is_number(list_peremenn[2]):
                         f.write('\tli.s $f1, ' + list_peremenn[2] + '\n')
-                        arg2 = '$f1'
-                        f.write('\t' + mults+ list_peremenn[3][1:]+', '  + arg1 + ', ' + arg2 + '\n')
+                        arg_right = '$f1'
+                        f.write('\t' + mults+ list_peremenn[3][1:]+', '  + arg_left + ', ' + arg_right + '\n')
                     elif (list_peremenn[2] in tabl_sim and tabl_sim[list_peremenn[2]][1] == 'real'):
-                        arg2 = '$' + tabl_sim[list_peremenn[2]][0]
-                        f.write('\t' + mults+ list_peremenn[3][1:]+', ' + arg1 + ', ' + arg2 + '\n')
+                        arg_right = '$' + tabl_sim[list_peremenn[2]][0]
+                        f.write('\t' + mults+ list_peremenn[3][1:]+', ' + arg_left + ', ' + arg_right + '\n')
                     elif (table_for_t[list_peremenn[2]][0] == 'r' and list_peremenn[2] in table_for_t):
-                        arg2 = '$f' + list_peremenn[2][1:]
-                        f.write('\t' + mults+ list_peremenn[3][1:]+', '  + arg1 + ', ' + arg2 + '\n')
+                        arg_right = '$f' + list_peremenn[2][1:]
+                        f.write('\t' + mults+ list_peremenn[3][1:]+', '  + arg_left + ', ' + arg_right + '\n')
                     else:
                         print('error неверный тип')
                         return
-
             elif ((list_peremenn[0] == '+') or (list_peremenn[0] == '-')):
-
                     addu = ""
                     addus = ""
                     kek = 0
@@ -244,87 +226,75 @@ def fucking_code_generation(threeaddrcode, tabl_sim):
                     keks = mass[3]
                     print(tabl_sim['t0'][0])
                     if not (is_number(list_peremenn[1]) or is_number(list_peremenn[2])):
-                        if (list_peremenn[1].isnumeric() or tabl_sim[list_peremenn[1]][1] == 'int' or
-                            table_for_t[list_peremenn[1]][
-                                0] == 'i') and (
-                                list_peremenn[2].isnumeric() or tabl_sim[list_peremenn[2]][1] == 'int' or
-                                table_for_t[list_peremenn[kek]][
-                                    0] == 'i'):
+                        if (list_peremenn[1].isnumeric() or tabl_sim[list_peremenn[1]][1] == 'int' or table_for_t[list_peremenn[1]][0] == 'i') and (list_peremenn[2].isnumeric() or tabl_sim[list_peremenn[2]][1] == 'int' or table_for_t[list_peremenn[kek]][0] == 'i'):
                             if list_peremenn[1].isnumeric():
                                 f.write('\tli $t0, ' + list_peremenn[1] + '\n')
-                                arg1 = '$t0'
+                                arg_left = '$t0'
                                 if list_peremenn[2].isnumeric():
                                     f.write('\tli $t1, ' + list_peremenn[2] + '\n')
-                                    arg2 = '$t1'
-                                    f.write('\t' + addu + list_peremenn[3] + ', ' + arg1 + ', ' + arg2 + '\n')
+                                    arg_right = '$t1'
+                                    f.write('\t' + addu + list_peremenn[3] + ', ' + arg_left + ', ' + arg_right + '\n')
                                 elif (list_peremenn[2] in tabl_sim and tabl_sim[list_peremenn[2]][1] == 'int'):
-                                    arg2 = '$' + tabl_sim[list_peremenn[2]][0]
-                                    f.write('\t' + addu + list_peremenn[3] + ', ' + arg1 + ', ' + arg2 + '\n')
+                                    arg_right = '$' + tabl_sim[list_peremenn[2]][0]
+                                    f.write('\t' + addu + list_peremenn[3] + ', ' + arg_left + ', ' + arg_right + '\n')
                                 elif (table_for_t[list_peremenn[2]][0] == 'i'):
-                                    arg2 = '$' + list_peremenn[2]
-                                    f.write('\t' + addu + list_peremenn[3] + ', ' + arg1 + ', ' + arg2 + '\n')
+                                    arg_right = '$' + list_peremenn[2]
+                                    f.write('\t' + addu + list_peremenn[3] + ', ' + arg_left + ', ' + arg_right + '\n')
                             elif ((list_peremenn[1] in tabl_sim and tabl_sim[list_peremenn[1]][1] == 'int') or (
                                     table_for_t[list_peremenn[1]][0] == 'i' and list_peremenn[1] in table_for_t)):
                                 if (list_peremenn[1] in tabl_sim and tabl_sim[list_peremenn[1]][1] == 'int'):
-                                    arg1 = '$' + tabl_sim[list_peremenn[1]][0]
+                                    arg_left = '$' + tabl_sim[list_peremenn[1]][0]
                                 else:
-                                    arg1 = '$' + list_peremenn[1]
+                                    arg_left = '$' + list_peremenn[1]
                                 if list_peremenn[2].isnumeric():
                                     f.write('\tli $t1, ' + list_peremenn[2] + '\n')
-                                    arg2 = '$t1'
-                                    f.write('\t' + addu + list_peremenn[3] + ', ' + arg1 + ', ' + arg2 + '\n')
+                                    arg_right = '$t1'
+                                    f.write('\t' + addu + list_peremenn[3] + ', ' + arg_left + ', ' + arg_right + '\n')
                                 elif (list_peremenn[2] in tabl_sim and tabl_sim[list_peremenn[2]][1] == 'int'):
-                                    arg2 = '$' + tabl_sim[list_peremenn[2]][0]
-                                    f.write('\t' + addu + list_peremenn[3] + ', ' + arg1 + ', ' + arg2 + '\n')
+                                    arg_right = '$' + tabl_sim[list_peremenn[2]][0]
+                                    f.write('\t' + addu + list_peremenn[3] + ', ' + arg_left + ', ' + arg_right + '\n')
                                 elif (table_for_t[list_peremenn[2]][0] == 'i' and list_peremenn[2] in table_for_t):
-                                    arg2 = '$' + list_peremenn[2]
-                                    f.write('\t' + addu + list_peremenn[3] + ', ' + arg1 + ', ' + arg2 + '\n')
+                                    arg_right = '$' + list_peremenn[2]
+                                    f.write('\t' + addu + list_peremenn[3] + ', ' + arg_left + ', ' + arg_right + '\n')
                         elif ((list_peremenn[1] in tabl_sim and tabl_sim[list_peremenn[1]][1] == 'real') or (
                                 table_for_t[list_peremenn[1]][0] == 'r' and list_peremenn[1] in table_for_t)):
                             if (list_peremenn[1] in tabl_sim and tabl_sim[list_peremenn[1]][1] == 'real'):
-                                arg1 = '$' + tabl_sim[list_peremenn[1]][0]
+                                arg_left = '$' + tabl_sim[list_peremenn[1]][0]
                             else:
-                                arg1 = '$f' + list_peremenn[1][1:]
+                                arg_left = '$f' + list_peremenn[1][1:]
                             if is_number(list_peremenn[2]):
                                 f.write('\tli.s $f1, ' + list_peremenn[2] + '\n')
-                                arg2 = '$f1'
-                                f.write('\t' + addus + list_peremenn[3][1:] + ', ' + arg1 + ', ' + arg2 + '\n')
+                                arg_right = '$f1'
+                                f.write('\t' + addus + list_peremenn[3][1:] + ', ' + arg_left + ', ' + arg_right + '\n')
                             elif (list_peremenn[2] in tabl_sim and tabl_sim[list_peremenn[2]][1] == 'real'):
-                                arg2 = '$' + tabl_sim[list_peremenn[2]][0]
-                                f.write('\t' + addus + list_peremenn[3][1:] + ', ' + arg1 + ', ' + arg2 + '\n')
+                                arg_right = '$' + tabl_sim[list_peremenn[2]][0]
+                                f.write('\t' + addus + list_peremenn[3][1:] + ', ' + arg_left + ', ' + arg_right + '\n')
                             elif (table_for_t[list_peremenn[2]][0] == 'r' and list_peremenn[2] in table_for_t):
-                                arg2 = '$f' + list_peremenn[2][1:]
-                                f.write('\t' + addus + list_peremenn[3][1:] + ', ' + arg1 + ', ' + arg2 + '\n')
-                                # f.write('\tmult ' + arg1 + ', ' + arg2 + '\n')
-                            # f.write('\tmult $' + list_peremenn[1] + ', $' + list_peremenn[2] + '\n')
+                                arg_right = '$f' + list_peremenn[2][1:]
+                                f.write('\t' + addus + list_peremenn[3][1:] + ', ' + arg_left + ', ' + arg_right + '\n')
                         else:
                             print('error неверный тип')
                             return
-                            # f.write('\tmult ' + arg1 + ', ' + arg2 + '\n')
-                        # f.write('\tmult $' + list_peremenn[1] + ', $' + list_peremenn[2] + '\n')
                     elif is_number(list_peremenn[1]):
-
                         f.write('\tli.s $f0, ' + list_peremenn[1] + '\n')
-                        arg1 = '$f0'
+                        arg_left = '$f0'
                         if is_number(list_peremenn[2]):
                             f.write('\tli.s $f1, ' + list_peremenn[2] + '\n')
-                            arg2 = '$f1'
-                            f.write('\t' + addus + list_peremenn[3][1:] + ', ' + arg1 + ', ' + arg2 + '\n')
+                            arg_right = '$f1'
+                            f.write('\t' + addus + list_peremenn[3][1:] + ', ' + arg_left + ', ' + arg_right + '\n')
                         elif ((list_peremenn[2] in tabl_sim and tabl_sim[list_peremenn[2]][1] == 'real') or (
                                 table_for_t[list_peremenn[keks]][0] == 'r' and list_peremenn[keks] in table_for_t)):
                             if (list_peremenn[kek] in tabl_sim and tabl_sim[list_peremenn[kek]][1] == 'real'):
-                                arg2 = '$' + tabl_sim[list_peremenn[2]][0]
+                                arg_right = '$' + tabl_sim[list_peremenn[2]][0]
                             elif (table_for_t[list_peremenn[1]][0] == 'r' and list_peremenn[1] in table_for_t):
-                                arg2 = '$f' + list_peremenn[2]
-                            f.write('\t' + addus + list_peremenn[3][1:] + ', ' + arg1 + ', ' + arg2 + '\n')
+                                arg_right = '$f' + list_peremenn[2]
+                            f.write('\t' + addus + list_peremenn[3][1:] + ', ' + arg_left + ', ' + arg_right + '\n')
                         else:
                             print('error неверный тип')
                             return
                     else:
                         print('error неверный тип')
                         return
-
-
             elif (list_peremenn[0] == '<' or list_peremenn[0] == '>' or list_peremenn[0] == '='):
                 if flag == False:
                     L = 'L' + str(if_count)
@@ -407,7 +377,6 @@ def fucking_code_generation(threeaddrcode, tabl_sim):
                     f.write('\tmove $a' + str(i) + ', $' + tabl_sim[args[i]][0] + '\n')
                 f.write('\tjal ' + list_peremenn[1] + '\n')
                 f.write('\tmove $' + list_peremenn[len(list_peremenn)-1] + ', $t9\n')
-
     f.write('END:\n')
     f.write(data)
     f.close()

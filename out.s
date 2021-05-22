@@ -11,12 +11,9 @@ SKIP0:
 	la $t1, true
 	beq $t1, $t0, kogda0
 L1:
-	li $t0, 2
-	li $t1, 5
-	div $t0, $t1
-	move $s3, $t0
-	li $v0, 1
-	la $a0, ($s3)
+	la $s4, drob5.3
+	li $v0, 2
+	lwc1 $f12, ($s4)
 	syscall
 	j END
 kogda0:
@@ -62,4 +59,5 @@ END:
 .data
 	true: .byte 1
 	false: .byte 0
+	drob5.3: .float 5.3
 	str0: .asciiz ","
