@@ -1,6 +1,6 @@
 from pars import result , Node
 from tabl_sim_gen import tabl_sim , table_for_t , functions
-from threeaddrcodegen import threeaddrcode , is_number
+from threeaddrcodegen import threeaddrcode , number_chek
 table_for_float={}
 t_s_copy = tabl_sim
 poka_flag = 0
@@ -14,7 +14,7 @@ def table_for_t_gen(table_for_t):
             table_for_t['t' + str(i)] = 'int'
             tabl_sim['t' + str(i)] = []
             tabl_sim['t' + str(i)] = 'int'
-        elif (is_number(table_for_t['t'+str(i)][0])) or (table_for_t['t'+str(i)][0] in tabl_sim and tabl_sim[table_for_t['t'+str(i)][0]][1]=='float'):
+        elif (number_chek(table_for_t['t'+str(i)][0])) or (table_for_t['t'+str(i)][0] in tabl_sim and tabl_sim[table_for_t['t'+str(i)][0]][1]=='float'):
             table_for_t['t'+str(i)]=[]
             table_for_t['t' + str(i)] = 'float'
             table_for_float['f'+ str(i)]=[]
@@ -28,7 +28,7 @@ def table_for_t_gen(table_for_t):
         table_for_t[lo].append(lo)
     return (table_for_t)
 
-def chek_mul_div(cl, mult, mults, kak):
+def chek_mul_div(cl):
     if (cl == '/'):
         mult = "div "
         mults = "div.s $f"
@@ -39,7 +39,7 @@ def chek_mul_div(cl, mult, mults, kak):
         kak = 2
     return mult, mults, kak
 
-def chek_sum_sub(cl, addu, addus, kek, keks):
+def chek_sum_sub(cl):
     if (cl == '+'):
         addu = "addu $"
         addus = "add.s $f"
@@ -60,7 +60,7 @@ def sravn_op_chek(list_peremenn):
     elif list_peremenn[0] == '=':
         flagok1 = "bne $"
     return flagok1
-def type_chek(tabl_sim, list_peremenn,type_p,t_p,kak1,kak2):
+def type_chek(tabl_sim, list_peremenn):
     if tabl_sim[list_peremenn[1]][1] == 'int':
         type_p = 'int'
         t_p = 'i'
@@ -96,7 +96,7 @@ def fucking_code_generation(threeaddrcode, tabl_sim):
                         f.write('\tli $' + tabl_sim[list_peremenn[2]][0] + ', ' + list_peremenn[1] + '\n')
                 elif list_peremenn[1].startswith('\"') and list_peremenn[1].endswith('\"') and (tabl_sim[list_peremenn[2]][1] == 'str'):
                     data = data + '\t' + list_peremenn[2] + ': .asciiz ' + list_peremenn[1] +'\n'
-                elif (is_number(list_peremenn[1]) and (tabl_sim[list_peremenn[2]][1] == 'float' or table_for_t[list_peremenn[2]][0]=='r')):
+                elif (number_chek(list_peremenn[1]) and (tabl_sim[list_peremenn[2]][1] == 'float' or table_for_t[list_peremenn[2]][0]=='r')):
                     data=data + '\tdrob'+ list_peremenn[1] +': .float '+list_peremenn[1]+'\n'
                     if (list_peremenn[2] in table_for_t.keys() and table_for_t[list_peremenn[2]][0]!=list_peremenn[2]):
                         f.write('\tla $' + list_peremenn[2] + ', drob' + list_peremenn[1] + '\n')
@@ -133,7 +133,7 @@ def fucking_code_generation(threeaddrcode, tabl_sim):
                 kak = 0
                 cl = list_peremenn[0]
                 mass = []
-                mass = chek_mul_div(cl, mult, mults, kak)
+                mass = chek_mul_div(cl)
                 mult = mass[0]
                 mults = mass[1]
                 kak = mass[2]
@@ -141,12 +141,12 @@ def fucking_code_generation(threeaddrcode, tabl_sim):
                 t_p = "i"
                 kak1 = '$'
                 kak2 = 'li $t1, '
-                flagok3 = type_chek(tabl_sim, list_peremenn, type_p,t_p,kak1,kak2)
+                flagok3 = type_chek(tabl_sim, list_peremenn)
                 type_p = flagok3[0]
                 t_p = flagok3[1]
                 kak1 = flagok3[2]
                 kak2 = flagok3[3]
-                if not(is_number(list_peremenn[1]) or is_number(list_peremenn[2])):
+                if not(number_chek(list_peremenn[1]) or number_chek(list_peremenn[2])):
                         if(list_peremenn[1].isnumeric() or tabl_sim[list_peremenn[1]][1]=='int' or table_for_t[list_peremenn[1]][0]=='i') and (list_peremenn[2].isnumeric() or tabl_sim[list_peremenn[2]][1]=='int'or table_for_t[list_peremenn[kak]][0]=='i'):
                             if list_peremenn[1].isnumeric():
                                 # f.write('\tli $t0, '+ list_peremenn[2] + '\n')
@@ -178,10 +178,10 @@ def fucking_code_generation(threeaddrcode, tabl_sim):
                                     arg_right = '$' + list_peremenn[2]
                                     f.write('\t' + mult + arg_left + ', ' + arg_right + '\n')
                                 f.write('\tmflo $' + list_peremenn[3] + '\n')
-                elif is_number(list_peremenn[1]):
+                elif number_chek(list_peremenn[1]):
                     f.write('\tli.s $f0, ' + list_peremenn[1] + '\n')
                     arg_left = '$f0'
-                    if is_number(list_peremenn[2]):
+                    if number_chek(list_peremenn[2]):
                         f.write('\tli.s $f1, ' + list_peremenn[2] + '\n')
                         arg_right = '$f1'
                         f.write('\t' + mults+ list_peremenn[3][1:]+', '  + arg_left + ', ' + arg_right + '\n')
@@ -201,7 +201,7 @@ def fucking_code_generation(threeaddrcode, tabl_sim):
                     keks = 0
                     cl = list_peremenn[0]
                     mass = []
-                    mass = chek_sum_sub(cl, addu, addus, kek, keks)
+                    mass = chek_sum_sub(cl)
                     addu = mass[0]
                     addus = mass[1]
                     kek = mass[2]
@@ -210,16 +210,16 @@ def fucking_code_generation(threeaddrcode, tabl_sim):
                     t_p = "i"
                     kak1 = '$'
                     kak2 = 'li $t1, '
-                    flagok3 = type_chek(tabl_sim, list_peremenn, type_p, t_p, kak1, kak2)
+                    flagok3 = type_chek(tabl_sim, list_peremenn)
                     type_p = flagok3[0]
                     t_p = flagok3[1]
                     kak1 = flagok3[2]
                     kak2 = flagok3[3]
                     print(tabl_sim['t0'][0])
-                    if (is_number(list_peremenn[1]) or is_number(list_peremenn[2])):
+                    if (number_chek(list_peremenn[1]) or number_chek(list_peremenn[2])):
                         f.write('\tli.s $f0, ' + list_peremenn[1] + '\n')
                         arg_left = '$f0'
-                        if is_number(list_peremenn[2]):
+                        if number_chek(list_peremenn[2]):
                             f.write('\tli.s $f1, ' + list_peremenn[2] + '\n')
                             arg_right = '$f1'
                             f.write('\t' + addus + list_peremenn[3][1:] + ', ' + arg_left + ', ' + arg_right + '\n')
@@ -233,7 +233,7 @@ def fucking_code_generation(threeaddrcode, tabl_sim):
                         else:
                             print('error неверный тип')
                             return
-                    elif not (is_number(list_peremenn[1]) or is_number(list_peremenn[2])):
+                    elif not (number_chek(list_peremenn[1]) or number_chek(list_peremenn[2])):
                         if (list_peremenn[1].isnumeric() or tabl_sim[list_peremenn[1]][1] == type_p or table_for_t[list_peremenn[1]][0] == t_p) and (list_peremenn[2].isnumeric() or tabl_sim[list_peremenn[2]][1] == type_p or table_for_t[list_peremenn[kek]][0] == t_p):
                             if list_peremenn[1].isnumeric():
                                 f.write('\tli $t0, ' + list_peremenn[1] + '\n')
@@ -326,7 +326,7 @@ def fucking_code_generation(threeaddrcode, tabl_sim):
                     f.write('\tli $v0, 1\n')
                     f.write('\tla $a0, '+list_peremenn[1] + '\n')
                     f.write('\tsyscall\n')
-                elif (is_number(list_peremenn[1])):
+                elif (number_chek(list_peremenn[1])):
                     data=data+'\tdrob'+ list_peremenn[1] +': .float '+list_peremenn[1]+'\n'
                     f.write('\tli $v0, 2\n')
                     f.write('\tlwc1 $f12, drob' + list_peremenn[1] + '\n')

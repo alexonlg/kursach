@@ -6,7 +6,7 @@ t_count = 0
 if_count = 0
 
 def oblast_vid(result, name):
-    if name.startswith('kogda') or (result.isnumeric()) or (is_number(result)):
+    if name.startswith('kogda') or (result.isnumeric()) or (number_chek(result)):
         return True
     if (result in tabl_sim.keys()):
         if (tabl_sim[result][2] == name):
@@ -79,7 +79,7 @@ def threeaddrcodeg(result, name):
         for i in range(len(result.parts)):
             threeaddrcodeg(result.parts[i], name)
 
-def is_number(string):
+def number_chek(string):
     try:
         float(string)
         if (string.isnumeric()):
