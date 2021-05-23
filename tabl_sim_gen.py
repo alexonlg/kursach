@@ -35,9 +35,6 @@ def obhod_fun(result, fun):
             obhod_fun(result.parts[i], fun)
 
 obhod(result)
-for i in tabl_sim:
-    print(i)
-
 def edit_tabl_sim(tabl_sim):
     new_tabl_sim = {}
     index = 0
@@ -52,10 +49,7 @@ def edit_tabl_sim(tabl_sim):
         index = index + 1
     index = 0
     index1=0
-    print(new_tabl_sim)
-    print('/////////////////////')
     for i in new_tabl_sim:
-        print(i)
         new_tabl_sim1[i[0]] = []
         if new_tabl_sim[i][2] != 'main':
             if joker != new_tabl_sim[i][2]:
