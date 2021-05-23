@@ -26,11 +26,11 @@ reserved = {
         # int
         'int':'INT',
         # real
-        'real':'REAL',
+        'float':'FLOAT',
         # BOOLEAN
         'boolean':'BOOLEAN',
         # var
-        'var':'VAR',
+        'obyava':'OBYAVA',
         'str':'STRING'
 }
 

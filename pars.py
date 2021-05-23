@@ -1,4 +1,6 @@
 import ply.yacc as yacc
+from tkinter import Tk  # from tkinter import Tk for Python 3.x
+from tkinter.filedialog import askopenfilename
 from lexer import tokens
 #начало парсера
 class Node:
@@ -20,8 +22,8 @@ class Node:
         self.parts = parts
 
 def p_prog(p):
-    '''prog : VAR dec_list LFIG stmt_list RFIG
-            | VAR dec_list func_list LFIG stmt_list RFIG'''
+    '''prog : OBYAVA dec_list LFIG stmt_list RFIG
+            | OBYAVA dec_list func_list LFIG stmt_list RFIG'''
     if len(p) == 6:
         p[0] = Node('prog', [p[2], p[4]])
     else:
@@ -37,7 +39,7 @@ def p_func_list(p):
 
 def p_def(p):
     '''func : FUNC ID LPAREN dec_list RPAREN LFIG stmt_list_func RFIG
-            | FUNC ID LPAREN dec_list RPAREN LFIG VAR dec_list stmt_list_func RFIG'''
+            | FUNC ID LPAREN dec_list RPAREN LFIG OBYAVA dec_list stmt_list_func RFIG'''
     if len(p) == 9:
         p[0] = Node(p[2], [p[4], p[7]])
     else:
@@ -70,7 +72,7 @@ def p_dec_list(p):
     '''dec_list : dec
                | dec_list SEMI_COLON dec'''
     if len(p) == 2:
-        p[0] = Node('VAR', [p[1]])
+        p[0] = Node('OBYAVA', [p[1]])
     else:
         p[0] = p[1].add_parts([p[3]])
 
@@ -80,7 +82,7 @@ def p_dec(p):
 
 def p_type(p):
     '''type : INT
-            | REAL
+            | FLOAT
             | STRING'''
     p[0] = Node('type', [p[1]])
 
@@ -228,8 +230,9 @@ def p_bool(p):
 def p_error(p):
     print ('Unexpected token:', p)
 
-#конец парсера
-f = open('code.txt', 'r')
+Tk().withdraw()  # we don't want a full GUI, so keep the root window from appearing
+file = askopenfilename()  # show an "Open" dialog box and return the path to the selected file
+f = open(file, 'r')
 text_input = f.read()
 
 parser = yacc.yacc()

@@ -53,6 +53,7 @@ def edit_tabl_sim(tabl_sim):
     index = 0
     index1=0
     print(new_tabl_sim)
+    print('/////////////////////')
     for i in new_tabl_sim:
         print(i)
         new_tabl_sim1[i[0]] = []

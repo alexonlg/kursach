@@ -1,5 +1,5 @@
-var y, x, j, g : int;
-z: real;
+obyava y, x, j, g : int;
+z: float;
 w, r : int;
 s : str
 
