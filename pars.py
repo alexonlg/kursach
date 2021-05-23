@@ -21,13 +21,13 @@ class Node:
         self.type = type
         self.parts = parts
 
-def p_prog(p):
-    '''prog : OBYAVA dec_list LFIG stmt_list RFIG
-            | OBYAVA dec_list func_list LFIG stmt_list RFIG'''
+def p_program(p):
+    '''program : OBYAVA declare_list LFIG statemant_list RFIG
+            | OBYAVA declare_list func_list LFIG statemant_list RFIG'''
     if len(p) == 6:
-        p[0] = Node('prog', [p[2], p[4]])
+        p[0] = Node('program', [p[2], p[4]])
     else:
-        p[0] = Node('prog', [p[2], p[3], p[5]])
+        p[0] = Node('program', [p[2], p[3], p[5]])
 
 def p_func_list(p):
     '''func_list : func
@@ -38,39 +38,39 @@ def p_func_list(p):
         p[0] = p[1].add_parts([p[3]])
 
 def p_def(p):
-    '''func : FUNC ID LPAREN dec_list RPAREN LFIG stmt_list_func RFIG
-            | FUNC ID LPAREN dec_list RPAREN LFIG OBYAVA dec_list stmt_list_func RFIG'''
+    '''func : FUNC ID LPAREN declare_list RPAREN LFIG statemant_list_func RFIG
+            | FUNC ID LPAREN declare_list RPAREN LFIG OBYAVA declare_list statemant_list_func RFIG'''
     if len(p) == 9:
         p[0] = Node(p[2], [p[4], p[7]])
     else:
         p[0] = Node(p[2], [p[4], p[8], p[9]])
 
-def p_funcstmt(p):
-    '''funcstmt : ID LPAREN args RPAREN'''
+def p_statem_func(p):
+    '''statem_func : ID LPAREN arguments RPAREN'''
     p[0] = Node(p[1], [p[3]])
 
-def p_args(p):
-    '''args : arg
-            | args SEMI_COLON arg'''
+def p_arguments(p):
+    '''arguments : argument
+            | arguments SEMI_COLON argument'''
     if len(p) == 2:
-        p[0] = Node('args', [p[1]])
+        p[0] = Node('arguments', [p[1]])
     else:
         p[0] = p[1].add_parts([p[3]])
 
 
-def p_arg(p):
-    '''arg : ID
+def p_argument(p):
+    '''argument : ID
             | NUMI
             | NUMR
-            | LPAREN exp RPAREN'''
+            | LPAREN expressoin RPAREN'''
     if len(p) == 2:
         p[0] = p[1]
     else:
         p[0] = p[2]
 
-def p_dec_list(p):
-    '''dec_list : dec
-               | dec_list SEMI_COLON dec'''
+def p_declare_list(p):
+    '''declare_list : dec
+               | declare_list SEMI_COLON dec'''
     if len(p) == 2:
         p[0] = Node('OBYAVA', [p[1]])
     else:
@@ -94,32 +94,32 @@ def p_id_list(p):
     else:
         p[0] = p[1].add_parts([p[3]])
 
-def p_stmt_list(p):
-    '''stmt_list : stmt
-                | stmt_list SEMI_COLON stmt'''
+def p_statemant_list(p):
+    '''statemant_list : statemant
+                | statemant_list SEMI_COLON statemant'''
     if len(p) == 2:
-        p[0] = Node('stmt', [p[1]])
+        p[0] = Node('statemant', [p[1]])
     else:
         p[0] = p[1].add_parts([p[3]])
 
-def p_stmt(p):
-    '''stmt : assign
+def p_statemant(p):
+    '''statemant : prisvaiv
             | print
             | poka
             | kogda'''
     if len(p) == 2:
         p[0] = p[1]
 
-def p_stmt_list_kogda(p):
-    '''stmt_list_kogda : stmt_kogda
-                | stmt_list_kogda SEMI_COLON stmt_kogda'''
+def p_statemant_list_kogda(p):
+    '''statemant_list_kogda : statemant_kogda
+                | statemant_list_kogda SEMI_COLON statemant_kogda'''
     if len(p) == 2:
-        p[0] = Node('stmt', [p[1]])
+        p[0] = Node('statemant', [p[1]])
     else:
         p[0] = p[1].add_parts([p[3]])
 
-def p_stmt_kogda(p):
-    '''stmt_kogda : assign
+def p_statemant_kogda(p):
+    '''statemant_kogda : prisvaiv
             | print
             | poka
             | kogda
@@ -128,16 +128,16 @@ def p_stmt_kogda(p):
     if len(p) == 2:
         p[0] = p[1]
 
-def p_stmt_list_func(p):
-    '''stmt_list_func : stmt_func
-                | stmt_list_func SEMI_COLON stmt_func'''
+def p_statemant_list_func(p):
+    '''statemant_list_func : statemant_func
+                | statemant_list_func SEMI_COLON statemant_func'''
     if len(p) == 2:
-        p[0] = Node('stmt', [p[1]])
+        p[0] = Node('statemant', [p[1]])
     else:
         p[0] = p[1].add_parts([p[3]])
 
-def p_stmt_func(p):
-    '''stmt_func : assign
+def p_statemant_func(p):
+    '''statemant_func : prisvaiv
             | print
             | poka
             | kogda
@@ -146,18 +146,18 @@ def p_stmt_func(p):
         p[0] = p[1]
 
 def p_vozv(p):
-    '''vozv : VOZV exp'''
+    '''vozv : VOZV expressoin'''
     p[0] = Node(p[1], [p[2]])
 
-def p_assign(p):
-    '''assign : ID PRISV exp
+def p_prisvaiv(p):
+    '''prisvaiv : ID PRISV expressoin
                 | ID PRISV STRING'''
-    p[0] = Node('assign', [p[1], p[3]])
+    p[0] = Node('prisv', [p[1], p[3]])
 
-def p_exp(p):
-    '''exp : term
-            | exp SUM term
-            | exp MINUS term'''
+def p_expressoin(p):
+    '''expressoin : term
+            | expressoin SUM term
+            | expressoin MINUS term'''
     if len(p) == 2:
         p[0] = p[1]
     else:
@@ -173,37 +173,37 @@ def p_term(p):
         p[0] = Node(p[2], [p[1], p[3]])
 
 def p_factor(p):
-    '''factor : funcstmt
+    '''factor : statem_func
             | ID
             | NUMI
             | NUMR
-            | LPAREN exp RPAREN'''
+            | LPAREN expressoin RPAREN'''
     if len(p) == 2:
         p[0] = p[1]
     else: p[0] = p[2]
 
 def p_print(p):
-    '''print : PRINT LPAREN exp RPAREN
+    '''print : PRINT LPAREN expressoin RPAREN
                 | PRINT LPAREN STRING RPAREN'''
     p[0] = Node('print', [p[3]])
 
 def p_poka(p):
-    '''poka : POKA bool_exp DELAI LFIG stmt_list RFIG'''
+    '''poka : POKA logic_expressoinression DELAI LFIG statemant_list RFIG'''
     p[0] = Node('poka', [p[2], p[5]])
 
 def p_kogda(p):
-    '''kogda : KOGDA bool_exp TOGDA LFIG stmt_list_kogda RFIG ELSE LFIG stmt_list_kogda RFIG
-            | KOGDA bool_exp TOGDA LFIG stmt_list_kogda RFIG'''
+    '''kogda : KOGDA logic_expressoinression TOGDA LFIG statemant_list_kogda RFIG ELSE LFIG statemant_list_kogda RFIG
+            | KOGDA logic_expressoinression TOGDA LFIG statemant_list_kogda RFIG'''
     if len(p) == 11:
         p[0] = Node('kogda', [p[2], p[5], p[9]])
     else:
         p[0] = Node('kogda', [p[2], p[5]])
 
-def p_bool_exp(p):
-    '''bool_exp : bool_exp OR bool_exp_term
-                | bool_exp_term
-                | NOT bool_exp
-                | bool'''
+def p_logic_expressoinression(p):
+    '''logic_expressoinression : logic_expressoinression OR logic_expressoinression_term
+                | logic_expressoinression_term
+                | NOT logic_expressoinression
+                | logic'''
     if len(p) == 4:
         p[0] = Node(p[2], [p[1], p[3]])
     elif len(p) == 3:
@@ -211,9 +211,9 @@ def p_bool_exp(p):
     else:
         p[0] = p[1]
 
-def p_bool_exp_term(p):
-    '''bool_exp_term : bool_exp_term AND bool
-                | bool'''
+def p_logic_expressoinression_term(p):
+    '''logic_expressoinression_term : logic_expressoinression_term AND logic
+                | logic'''
     if len(p) == 4:
         p[0] = Node(p[2], [p[1], p[3]])
     elif len(p) == 3:
@@ -221,14 +221,14 @@ def p_bool_exp_term(p):
     else:
         p[0] = p[1]
 
-def p_bool(p):
-    '''bool : LPAREN exp RAVNO exp RPAREN
-            | LPAREN exp MORE exp RPAREN
-            | LPAREN exp LESS exp RPAREN'''
+def p_logic(p):
+    '''logic : LPAREN expressoin RAVNO expressoin RPAREN
+            | LPAREN expressoin MORE expressoin RPAREN
+            | LPAREN expressoin LESS expressoin RPAREN'''
     p[0] = Node(p[3], [p[2], p[4]])
 
 def p_error(p):
-    print ('Unexpected token:', p)
+    print ('Unexpressoinected token:', p)
 
 Tk().withdraw()  # we don't want a full GUI, so keep the root window from appearing
 file = askopenfilename()  # show an "Open" dialog box and return the path to the selected file

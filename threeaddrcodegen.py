@@ -44,7 +44,7 @@ def threeaddrcodeg(result, name):
         threeaddrcode[name].append(result)
     elif (type(result) != Node):
         return
-    elif (result.type == 'assign'):
+    elif (result.type == 'prisv'):
         if (type(result.parts[0]) == str and type(result.parts[1]) == str):
             if (not oblast_vid(result.parts[0], name)):
                 return
@@ -56,7 +56,7 @@ def threeaddrcodeg(result, name):
             threeaddrcode[name].append(':= '+'t'+str(t_count-1)+ ' '+result.parts[0])
             table_for_t['t'+str(t_count-1)]=[]
             table_for_t['t'+str(t_count-1)].append(result.parts[0])
-            print(table_for_t)
+
             t_count = 0
     elif ((result.type == 'kogda') or (result.type == 'poka')):
         flagok = if_while_chek(result)
